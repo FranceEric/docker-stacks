@@ -1,0 +1,600 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AccuRom Dashboard</title>
+<link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Exo+2:wght@300;400;600;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --local-bg: #0a0f1e;
+    --local-accent: #00d4ff;
+    --local-accent2: #0066ff;
+    --local-card: rgba(0, 212, 255, 0.05);
+    --local-border: rgba(0, 212, 255, 0.2);
+    --hotel-bg: #1a0a00;
+    --hotel-accent: #ff6b00;
+    --hotel-accent2: #ff3d00;
+    --hotel-card: rgba(255, 107, 0, 0.05);
+    --hotel-border: rgba(255, 107, 0, 0.2);
+    --bg: var(--local-bg);
+    --accent: var(--local-accent);
+    --accent2: var(--local-accent2);
+    --card: var(--local-card);
+    --border: var(--local-border);
+    --text: #e0f0ff;
+    --text-dim: rgba(224, 240, 255, 0.5);
+    --ip-local: 192.168.1.49;
+    --ip-tailscale: 100.89.20.64;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    font-family: 'Exo 2', sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    min-height: 100vh;
+    transition: background 0.6s ease;
+    overflow-x: hidden;
+  }
+
+  /* Grid background */
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background-image:
+      linear-gradient(var(--border) 1px, transparent 1px),
+      linear-gradient(90deg, var(--border) 1px, transparent 1px);
+    background-size: 40px 40px;
+    opacity: 0.3;
+    pointer-events: none;
+    transition: all 0.6s ease;
+    z-index: 0;
+  }
+
+  /* Glow orb */
+  body::after {
+    content: '';
+    position: fixed;
+    width: 600px;
+    height: 600px;
+    border-radius: 50%;
+    background: radial-gradient(circle, var(--accent2) 0%, transparent 70%);
+    opacity: 0.08;
+    top: -200px;
+    right: -200px;
+    pointer-events: none;
+    transition: all 0.6s ease;
+    z-index: 0;
+  }
+
+  .container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 24px;
+    position: relative;
+    z-index: 1;
+  }
+
+  /* Header */
+  header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 32px;
+    padding-bottom: 16px;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .logo {
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 1.4rem;
+    color: var(--accent);
+    text-shadow: 0 0 20px var(--accent);
+    letter-spacing: 2px;
+  }
+
+  .logo span {
+    color: var(--text-dim);
+    font-size: 0.75rem;
+    display: block;
+    letter-spacing: 4px;
+    margin-top: 2px;
+  }
+
+  /* Mode switcher */
+  .mode-switcher {
+    display: flex;
+    gap: 0;
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    overflow: hidden;
+  }
+
+  .mode-btn {
+    padding: 10px 24px;
+    background: transparent;
+    border: none;
+    color: var(--text-dim);
+    font-family: 'Exo 2', sans-serif;
+    font-size: 0.85rem;
+    font-weight: 600;
+    letter-spacing: 1px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    text-transform: uppercase;
+  }
+
+  .mode-btn.active {
+    background: var(--accent);
+    color: var(--bg);
+  }
+
+  .mode-btn:hover:not(.active) {
+    background: var(--card);
+    color: var(--text);
+  }
+
+  /* IP Badge */
+  .ip-badge {
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 0.75rem;
+    color: var(--accent);
+    background: var(--card);
+    border: 1px solid var(--border);
+    padding: 4px 12px;
+    border-radius: 4px;
+    margin-bottom: 32px;
+    display: inline-block;
+    transition: all 0.3s ease;
+  }
+
+  /* Section */
+  .section-title {
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 0.7rem;
+    letter-spacing: 4px;
+    color: var(--accent);
+    text-transform: uppercase;
+    margin-bottom: 16px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+
+  .section-title::after {
+    content: '';
+    flex: 1;
+    height: 1px;
+    background: var(--border);
+  }
+
+  /* Services grid */
+  .services-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+    gap: 12px;
+    margin-bottom: 40px;
+  }
+
+  .service-card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 16px;
+    text-decoration: none;
+    color: var(--text);
+    transition: all 0.3s ease;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .service-card::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 2px;
+    background: var(--accent);
+    transform: scaleX(0);
+    transition: transform 0.3s ease;
+  }
+
+  .service-card:hover {
+    border-color: var(--accent);
+    background: rgba(255,255,255,0.05);
+    transform: translateY(-2px);
+    box-shadow: 0 8px 24px rgba(0,0,0,0.3);
+  }
+
+  .service-card:hover::before {
+    transform: scaleX(1);
+  }
+
+  .service-icon {
+    font-size: 1.5rem;
+  }
+
+  .service-name {
+    font-weight: 600;
+    font-size: 0.9rem;
+  }
+
+  .service-url {
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 0.65rem;
+    color: var(--text-dim);
+    word-break: break-all;
+  }
+
+  /* Fixed services (no IP swap) */
+  .service-card.fixed {
+    opacity: 0.7;
+  }
+
+  .service-card.fixed:hover {
+    opacity: 1;
+  }
+
+  /* Containers */
+  .containers-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+    gap: 12px;
+    margin-bottom: 40px;
+  }
+
+  .container-card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 14px 16px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    transition: border-color 0.3s ease;
+  }
+
+  .container-card:hover {
+    border-color: var(--accent);
+  }
+
+  .status-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: #444;
+    flex-shrink: 0;
+    transition: all 0.3s ease;
+    box-shadow: none;
+  }
+
+  .status-dot.running {
+    background: #00ff88;
+    box-shadow: 0 0 8px #00ff88;
+    animation: pulse 2s infinite;
+  }
+
+  .status-dot.stopped {
+    background: #ff4444;
+    box-shadow: 0 0 8px #ff4444;
+  }
+
+  @keyframes pulse {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.5; }
+  }
+
+  .container-name {
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 0.85rem;
+    flex: 1;
+  }
+
+  .container-status {
+    font-size: 0.65rem;
+    color: var(--text-dim);
+    font-family: 'Share Tech Mono', monospace;
+  }
+
+  .container-actions {
+    display: flex;
+    gap: 4px;
+    margin-left: auto;
+  }
+
+  .action-btn {
+    width: 28px;
+    height: 28px;
+    border-radius: 4px;
+    border: 1px solid var(--border);
+    background: transparent;
+    color: var(--text-dim);
+    cursor: pointer;
+    font-size: 0.75rem;
+    transition: all 0.2s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .action-btn:hover {
+    border-color: var(--accent);
+    color: var(--accent);
+    background: var(--card);
+  }
+
+  .action-btn.start:hover { border-color: #00ff88; color: #00ff88; }
+  .action-btn.stop:hover { border-color: #ff4444; color: #ff4444; }
+  .action-btn.restart:hover { border-color: var(--accent); color: var(--accent); }
+
+  /* Error/loading */
+  .api-error {
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 0.75rem;
+    color: #ff4444;
+    padding: 8px 12px;
+    border: 1px solid rgba(255,68,68,0.3);
+    border-radius: 4px;
+    background: rgba(255,68,68,0.05);
+    margin-bottom: 16px;
+    display: none;
+  }
+
+  /* Hotel mode overrides */
+  body.hotel-mode {
+    --bg: var(--hotel-bg);
+    --accent: var(--hotel-accent);
+    --accent2: var(--hotel-accent2);
+    --card: var(--hotel-card);
+    --border: var(--hotel-border);
+    --text: #fff0e0;
+    --text-dim: rgba(255, 240, 224, 0.5);
+  }
+
+  /* Scan line effect */
+  .scanline {
+    position: fixed;
+    top: 0; left: 0; right: 0;
+    height: 2px;
+    background: var(--accent);
+    opacity: 0.1;
+    animation: scan 4s linear infinite;
+    pointer-events: none;
+    z-index: 999;
+  }
+
+  @keyframes scan {
+    0% { top: 0; }
+    100% { top: 100vh; }
+  }
+
+  /* Mode transition flash */
+  .flash {
+    position: fixed;
+    inset: 0;
+    background: var(--accent);
+    opacity: 0;
+    pointer-events: none;
+    z-index: 9999;
+    transition: opacity 0.1s;
+  }
+
+  .flash.active {
+    opacity: 0.1;
+  }
+
+  /* Refresh btn */
+  .refresh-btn {
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 0.7rem;
+    color: var(--text-dim);
+    background: transparent;
+    border: 1px solid var(--border);
+    padding: 4px 10px;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    margin-left: 12px;
+  }
+
+  .refresh-btn:hover {
+    color: var(--accent);
+    border-color: var(--accent);
+  }
+
+  footer {
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 0.65rem;
+    color: var(--text-dim);
+    text-align: center;
+    padding: 24px 0 8px;
+    border-top: 1px solid var(--border);
+    letter-spacing: 2px;
+  }
+</style>
+</head>
+<body>
+
+<div class="scanline"></div>
+<div class="flash" id="flash"></div>
+
+<div class="container">
+  <header>
+    <div class="logo">
+      ACCUROM
+      <span>DASHBOARD v1.0</span>
+    </div>
+    <div class="mode-switcher">
+      <button class="mode-btn active" id="btn-local" onclick="setMode('local')"> Maison</button>
+      <button class="mode-btn" id="btn-hotel" onclick="setMode('hotel')"> Htel</button>
+    </div>
+  </header>
+
+  <div class="ip-badge" id="ip-badge">// IP : 192.168.1.49</div>
+
+  <!-- SERVICES -->
+  <div class="section-title">Services</div>
+  <div class="services-grid" id="services-grid"></div>
+
+  <!-- SERVICES FIXES -->
+  <div class="section-title">quipements réseau</div>
+  <div class="services-grid" id="fixed-grid"></div>
+
+  <!-- CONTENEURS -->
+  <div class="section-title">
+    Conteneurs Docker
+    <button class="refresh-btn" onclick="loadContainers()"> Refresh</button>
+  </div>
+  <div class="api-error" id="api-error"> API Docker inaccessible  lance le conteneur docker-proxy sur le port 2375</div>
+  <div class="containers-grid" id="containers-grid">
+    <div style="font-family:'Share Tech Mono',monospace;font-size:0.75rem;color:var(--text-dim)">Chargement...</div>
+  </div>
+
+  <footer>ACCUROM PI5 · TAILSCALE · JELLYFIN · 2026</footer>
+</div>
+
+<script>
+  const LOCAL_IP = '192.168.1.49';
+  const TAILSCALE_IP = '100.89.20.64';
+  const DOCKER_API = `/docker-api`;
+
+  let currentMode = localStorage.getItem('dashboard-mode') || 'local';
+
+  const services = [
+    { name: 'Jellyfin', icon: '', port: 8096, proto: 'http' },
+    { name: 'HomeAssistant', icon: '', port: 8123, proto: 'http' },
+    { name: 'Portainer', icon: '', port: 9000, proto: 'http' },
+    { name: 'Portainer HTTPS', icon: '', port: 9443, proto: 'https' },
+    { name: 'Grafana', icon: '', port: 3000, proto: 'http' },
+    { name: 'InfluxDB', icon: '', port: 8086, proto: 'http' },
+    { name: 'VS Code', icon: '', port: 8443, proto: 'http' },
+    { name: 'Duplicati', icon: '', port: 8200, proto: 'http' },
+    { name: 'AppDaemon', icon: '', port: 5050, proto: 'http' },
+    { name: 'ESPHome', icon: '', port: 6052, proto: 'http' },
+    { name: 'Plex', icon: '', port: 32400, proto: 'http', path: '/web' },
+    { name: 'FileBrowser', icon: '', port: 8084, proto: 'http' },
+    { name: 'Tdarr', icon: '', port: 8265, proto: 'http' },
+  ];
+
+  const fixedServices = [
+    { name: 'Synology NAS', icon: '', url: 'http://192.168.1.10:5000' },
+    { name: 'Freebox', icon: '', url: 'https://accurom.freeboxos.fr:1141' },
+    { name: 'EX6130', icon: '', url: 'http://192.168.1.250/' },
+    { name: 'Imprimante', icon: '', url: 'http://192.168.1.106' },
+    { name: 'Répéteur Piscine', icon: '', url: 'http://192.168.1.171/' },
+    { name: 'Répéteur Garage', icon: '', url: 'http://192.168.1.9/' },
+  ];
+
+  function getIP() {
+    return currentMode === 'local' ? LOCAL_IP : TAILSCALE_IP;
+  }
+
+  function renderServices() {
+    const ip = getIP();
+    const grid = document.getElementById('services-grid');
+    grid.innerHTML = services.map(s => {
+      const url = `${s.proto}://${ip}:${s.port}${s.path || ''}`;
+      return `
+        <a class="service-card" href="${url}" target="_blank">
+          <div class="service-icon">${s.icon}</div>
+          <div class="service-name">${s.name}</div>
+          <div class="service-url">${url}</div>
+        </a>`;
+    }).join('');
+  }
+
+  function renderFixed() {
+    const grid = document.getElementById('fixed-grid');
+    grid.innerHTML = fixedServices.map(s => `
+      <a class="service-card fixed" href="${s.url}" target="_blank">
+        <div class="service-icon">${s.icon}</div>
+        <div class="service-name">${s.name}</div>
+        <div class="service-url">${s.url}</div>
+      </a>`).join('');
+  }
+
+  function setMode(mode) {
+    currentMode = mode;
+    localStorage.setItem('dashboard-mode', mode);
+
+    // Flash effect
+    const flash = document.getElementById('flash');
+    flash.classList.add('active');
+    setTimeout(() => flash.classList.remove('active'), 200);
+
+    // Toggle classes
+    document.body.classList.toggle('hotel-mode', mode === 'hotel');
+    document.getElementById('btn-local').classList.toggle('active', mode === 'local');
+    document.getElementById('btn-hotel').classList.toggle('active', mode === 'hotel');
+
+    // Update IP badge
+    const ip = getIP();
+    document.getElementById('ip-badge').textContent = `// IP : ${ip}`;
+
+    renderServices();
+  }
+
+  async function loadContainers() {
+    const grid = document.getElementById('containers-grid');
+    const errDiv = document.getElementById('api-error');
+    grid.innerHTML = '<div style="font-family:\'Share Tech Mono\',monospace;font-size:0.75rem;color:var(--text-dim)">Chargement...</div>';
+
+    try {
+      const res = await fetch(`${DOCKER_API}/containers/json?all=1`, { signal: AbortSignal.timeout(3000) });
+      if (!res.ok) throw new Error();
+      const containers = await res.json();
+      errDiv.style.display = 'none';
+
+      if (!containers.length) {
+        grid.innerHTML = '<div style="font-family:\'Share Tech Mono\',monospace;font-size:0.75rem;color:var(--text-dim)">Aucun conteneur trouvé</div>';
+        return;
+      }
+
+      grid.innerHTML = containers
+        .sort((a, b) => a.Names[0].localeCompare(b.Names[0]))
+        .map(c => {
+          const name = c.Names[0].replace('/', '');
+          const running = c.State === 'running';
+          const statusText = c.Status;
+          return `
+            <div class="container-card">
+              <div class="status-dot ${running ? 'running' : 'stopped'}"></div>
+              <div>
+                <div class="container-name">${name}</div>
+                <div class="container-status">${statusText}</div>
+              </div>
+              <div class="container-actions">
+                <button class="action-btn start" title="Démarrer" onclick="containerAction('${c.Id}', 'start')"></button>
+                <button class="action-btn stop" title="Arrter" onclick="containerAction('${c.Id}', 'stop')"></button>
+                <button class="action-btn restart" title="Redémarrer" onclick="containerAction('${c.Id}', 'restart')"></button>
+              </div>
+            </div>`;
+        }).join('');
+    } catch (e) {
+      errDiv.style.display = 'block';
+      grid.innerHTML = '';
+    }
+  }
+
+  async function containerAction(id, action) {
+    try {
+      await fetch(`${DOCKER_API}/containers/${id}/${action}`, { method: 'POST', signal: AbortSignal.timeout(5000) });
+      setTimeout(loadContainers, 1500);
+    } catch (e) {
+      alert(`Erreur: impossible d'effectuer l'action "${action}"`);
+    }
+  }
+
+  // Init
+  setMode(currentMode);
+  renderFixed();
+  loadContainers();
+  setInterval(loadContainers, 30000);
+</script>
+</body>
+</html>
