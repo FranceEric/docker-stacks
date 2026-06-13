@@ -1,0 +1,21 @@
+version: '3'
+services:
+  dupeguru:
+    image: jlesage/dupeguru
+    ports:
+      - "5800:5800"
+    volumes:
+      - "/docker/appdata/dupeguru:/config:rw"
+    #  - "/home/user:/storage:rw"
+      
+      
+      - NasHomeassistantDuplicati:/data/movies
+      - 'ErDownload:/storage:rw'
+      
+    
+
+volumes:
+  NasHomeassistantDuplicati:
+    external: true
+  ErDownload:
+    external: true

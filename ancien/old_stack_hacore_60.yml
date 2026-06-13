@@ -1,0 +1,13 @@
+version: '3.8'
+services:
+  homeassistant:
+    image: homeassistant/home-assistant:stable
+    container_name: hacore
+    environment:
+      - TZ=Europe/Paris
+    ports:
+      - 8125:8123
+    volumes:
+      - /opt/docker/hacore/config:/config
+      - /etc/localtime:/etc/localtime:ro
+    restart: always

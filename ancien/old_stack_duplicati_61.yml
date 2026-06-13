@@ -1,0 +1,24 @@
+version: "3.8"
+services:
+  duplicati:
+    image: lscr.io/linuxserver/duplicati
+    container_name: duplicati
+    environment:
+      - PUID=1000
+      - PGID=1000
+      - TZ=Europe/Paris
+      #- CLI_ARGS= #optional
+    volumes:
+      - /opt/docker/duplicati/config:/config
+     # - /opt/docker/duplicati/backups:/backups
+      #- afp://Accura.local/Open on Accura/HomeAssistant/Duplicati:/backups
+      - /opt/docker:/source
+      - NasHomeassistantDuplicati:/backups
+    ports:
+      - 8200:8200
+    restart: unless-stopped
+
+
+volumes:
+  NasHomeassistantDuplicati:
+    external: true

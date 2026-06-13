@@ -1,0 +1,40 @@
+version: "3.8"
+services:
+  jellyfin:
+    image: lscr.io/linuxserver/jellyfin:latest
+    container_name: jellyfin
+    environment:
+      - PUID=1000
+      - PGID=1000
+      - TZ=Etc/UTC
+     # - JELLYFIN_PublishedServerUrl=http://192.168.1.49:8096
+      - JELLYFIN_PublishedServerUrl=192.168.0.5 #optional
+    volumes:
+      - /srv/appdata/jellyfin/library:/config
+      - /srv/appdata/jellyfin/tvseries:/data/tvshows
+    #  - /srv/appdata/jellyfin/movies:/data/movies
+      - NasHomeassistantDuplicati:/data/movies
+      - ErDownload:/data/download
+      - Open:/data/Open
+    ports:
+      - 8096:8096
+   #   - 8920:8920 #facultatif
+   #   - 7359:7359/udp #facultatif
+    #  - 1900:1900/udp #facultatif
+    restart: unless-stopped
+
+volumes:
+  NasHomeassistantDuplicati:
+    external: true
+  ErDownload:
+    external: true
+
+
+  Open: ## Le nom de mon volume en montage NFS
+    driver: local
+    driver_opts: ## Définition des options du montage
+      type: nfs ## Choix du type de montage
+      o: addr=192.168.1.10,nolock,soft,rw ## Indication de l'adresse IP du stockage et des options d'accès
+      device: :/volume1/Open/ ## Indication du chemin du montage sur le stockage
+  emby-config: ## Le nom de mon volume local
+        driver: local

@@ -1,0 +1,17 @@
+version: '3.8'
+services:
+  appdeamon:
+    image: acockburn/appdaemon:latest
+    container_name: appdeamon
+    network_mode: 'host'
+    environment:
+      - HA_URL="http://192.168.1.49:8123"
+      - DASH_URL="http://127.0.0.1:5050"
+      - TOKEN="eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiIwOTgxNzkwNmYwZWM0Zjc2YjI3YjgzNDg3YTllNzQ2NyIsImlhdCI6MTcwNjQyNDQ5MywiZXhwIjoyMDIxNzg0NDkzfQ.YGldRDbR4_zCJZJpKC0o-raXwI1rdvCLJBs7_8-Hoew"
+    ports:
+      - 5050:5050
+    volumes:
+      - /opt/docker/appdeamon/config/appdaemon:/conf
+    #  - /opt/docker/homeAssistant/data/appdaemon:/conf
+      - /etc/localtime:/etc/localtime:ro
+    restart: always

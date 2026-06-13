@@ -1,0 +1,19 @@
+version: '3.8'
+services:
+  influxdb:
+    image: influxdb:latest
+    container_name: infludb
+    restart: unless-stopped
+    network_mode: host
+    environment:
+      - DOCKER_INFLUXDB_INIT_MODE=setup
+      - DOCKER_INFLUXDB_INIT_USERNAME=Eric
+      - DOCKER_INFLUXDB_INIT_PASSWORD=@110Rick
+      - DOCKER_INFLUXDB_INIT_ORG=home_org
+      - DOCKER_INFLUXDB_INIT_BUCKET=homeassistant
+      - DOCKER_INFLUXDB_INIT_ADMIN_TOKEN=MonTokenSecret123
+    volumes:
+      - myInfluxVolume:/var/lib/influxdb2
+
+volumes:
+  myInfluxVolume: {}

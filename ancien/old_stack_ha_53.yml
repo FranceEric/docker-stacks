@@ -1,0 +1,31 @@
+version: '3.8'
+services:
+    homeassistant:
+        image: lscr.io/linuxserver/homeassistant:latest
+        container_name: homeassistant
+        network_mode: host
+        environment:
+            - PUID=1000
+            - PGID=1000
+            - TZ=Europe/Paris
+
+        #cap_add:
+           # - NET_ADMIN
+           # - NET_RAW
+        privileged: true
+        volumes:
+ 
+            - /opt/docker/homeAssistant/data:/config
+
+            #volume créé pour monitorer depuis ha
+            - /var/run/docker.sock:/var/run/docker.sock
+
+            #bleutooth
+            - /run/dbus:/run/dbus:ro
+
+        devices:
+            - /dev/hci0:/dev/hci0
+      
+        restart: unless-stopped
+   #     devices:
+     #       - "/dev/ttyUSB0:/dev/ttyUSB0"

@@ -1,0 +1,18 @@
+services:
+  syncthing:
+    image: linuxserver/syncthing:latest
+    container_name: syncthing
+    environment:
+      - PUID=1000
+      - PGID=1000
+      - TZ=Europe/Paris
+    volumes:
+      - /opt/docker/syncthing/config:/config
+      - /mnt/nas/syncthing:/data/nas        # dossier sur ton NAS
+      - /home/erix/syncthing-local:/data/local  # optionnel, stockage local Pi
+    ports:
+      - 8384:8384       # UI web
+      - 22000:22000/tcp # transfert fichiers
+      - 22000:22000/udp
+      - 21027:21027/udp # découverte locale
+    restart: unless-stopped

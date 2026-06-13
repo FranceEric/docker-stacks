@@ -1,0 +1,16 @@
+version: "3.8"
+services:
+  vscode:
+    container_name: code-server
+    image: linuxserver/code-server
+    restart: unless-stopped
+    ports: 
+      - "8443:8443"
+    volumes:
+      - /opt/docker/codeserver:/config
+      - /opt/docker:/config/workspace
+    environment:
+      - PUID=0
+      - PGID=0
+      - TZ=Europe/Paris
+

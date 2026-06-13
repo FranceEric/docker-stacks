@@ -1,0 +1,17 @@
+version: '3.8'
+services:
+  esphome:
+    container_name: esphome
+    image: ghcr.io/esphome/esphome:latest
+    volumes:
+      - /opt/docker/esphome/config:/config
+      - /etc/localtime:/etc/localtime:ro
+    restart: always
+    privileged: true
+    network_mode: host
+    environment:
+      - USERNAME=Eric
+      - PASSWORD=@110Rick
+      - ESPHOME_DASHBOARD_USE_PING=true
+    ports:
+      - 6052:6052

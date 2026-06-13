@@ -1,0 +1,16 @@
+services:
+  krokiet:
+    image: jlesage/krokiet
+    ports:
+      - "5800:5800"
+    environment:
+      - USER_ID=1026
+      - GROUP_ID=1000
+    volumes:
+      - "/docker/appdata/krokiet:/config:rw"
+   #   - "/mnt/nfs-partage:/storage/nas:rw"
+      - "ErDownload:/storage/downloads:rw"
+
+volumes:
+  ErDownload:
+    external: true
